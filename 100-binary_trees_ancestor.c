@@ -1,50 +1,52 @@
 #include "binary_trees.h"
 
 /**
- * binary_trees_ancestor - Finds the lowest common ancestor of two nodes.
+ * binary_trees_ancestor - Finds the lowest common ancestor (LCA) of two nodes.
  * @first: A pointer to the first node.
  * @second: A pointer to the second node.
  *
- * Return: A pointer to the lowest common ancestor node,
- *         or NULL if no common ancestor was found.
+ * Return: The lowest common ancestor (LCA) node of the two given nodes. NULL
+ * is returned when an ancestor is not found.
  */
 binary_tree_t *binary_trees_ancestor(const binary_tree_t *first,
-		const binary_tree_t *second)
+									 const binary_tree_t *second)
 {
-	const binary_tree_t *temp;
-
-	if (!first || !second)
+	if (first == NULL || second == NULL)
 		return (NULL);
 
-	if (first == second)
-		return ((binary_tree_t *)first);
+	/* Check if first is an ancestor of second */
+	const binary_tree_t *temp = second;
 
-	temp = first;
-	while (temp)
+	while (temp != NULL)
 	{
-		if (binary_tree_is_descendant_of(second, temp))
-			return ((binary_tree_t *)temp);
+		if (temp == first)
+			return ((binary_tree_t *)first);
 		temp = temp->parent;
 	}
 
-	return (NULL);
-}
-
-/**
- * binary_tree_is_descendant_of - Checks if a node is descendant of another.
- * @node: A pointer to the node to check if it's a descendant.
- * @ancestor: A pointer to the ancestor node.
- *
- * Return: 1 if node is a descendant of ancestor, 0 otherwise.
- */
-int binary_tree_is_descendant_of(const binary_tree_t *node,
-		const binary_tree_t *ancestor)
-{
-	while (node)
+	/* Check if second is an ancestor of first */
+	temp = first;
+	while (temp != NULL)
 	{
-		if (node == ancestor)
-			return (1);
-		node = node->parent;
+		if (temp == second)
+			return ((binary_tree_t *)second);
+		temp = temp->parent;
 	}
-	return (0);
+
+	/* search for the ancestor in the entire tree */
+	binary_tree_t *first_ancestor = first->parent;
+	binary_tree_t *second_ancestor = second->parent;
+
+	while (first_ancestor != NULL)
+	{
+		while (second_ancestor != NULL)
+		{
+			if (first_ancestor == second_ancestor)
+				return (first_ancestor);
+			second_ancestor = second_ancestor->parent;
+		}
+		first_ancestor = first_ancestor->parent;
+		second_ancestor = second->parent;
+	}
+	return (NULL);
 }
